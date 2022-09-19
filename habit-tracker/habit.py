@@ -1,5 +1,6 @@
 """ Class and methods relating to the basic habit object """
 
+import time
 from pathlib import Path
 import datetime
 import pickle
@@ -16,6 +17,7 @@ class Frequency(Enum):
 class Habit:
     def __init__(self, name: str, frequency: Frequency = Frequency.DAILY):
         # Validation
+        assert type(name) == str, f'{name} is not a string'
         assert frequency in Frequency, f'{frequency} is not a valid frequency: {Frequency.__members__}'
 
         # Assignment 
@@ -103,19 +105,31 @@ class HabitManager:
         pickle.dump(self, open(HERE/'data'/'habit_manager.pkl', 'wb'))
 
     def load(self):
-        if (HERE/'habit_manager.pkl').exists():
-            return pickle.load(open(HERE/'data'/'habit_manager.pkl', 'rb'))
+        if (HERE/'data'/'habit_manager.pkl').exists():
+            start = time.perf_counter()
+            habit_manager = pickle.load(open(HERE/'data'/'habit_manager.pkl', 'rb'))
+            # print(f'Loaded habit manager in {time.perf_counter() - start} seconds')
+            return habit_manager
         else:
+            print('No habit manager found on disk, creating new one')
             return self
 
     def add_habit(self, habit: Habit):
         self.habits.append(habit)
+        self.save()
     
     def delete_habit(self, habit: Habit):
         self.habits.remove(habit)
+        self.save()
 
     def get_habits(self):
         return self.habits
+
+    def get_habit_by_name(self, name: str):
+        for habit in self.habits:
+            if habit.name == name:
+                return habit
+        return None
 
     def get_habits_by_frequency(self, frequency: Frequency):
         assert frequency in Frequency, f'{frequency} is not a valid frequency: {Frequency.__members__}'
