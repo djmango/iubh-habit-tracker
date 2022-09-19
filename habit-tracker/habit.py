@@ -1,4 +1,4 @@
-""" Class and methods relating to the basic habbit object """
+""" Class and methods relating to the basic habit object """
 
 from pathlib import Path
 import datetime
@@ -13,7 +13,7 @@ class Frequency(Enum):
     DAILY = 'd'
     WEEKLY = 'w'
 
-class Habbit:
+class Habit:
     def __init__(self, name: str, frequency: Frequency = Frequency.DAILY):
         # Validation
         assert frequency in Frequency, f'{frequency} is not a valid frequency: {Frequency.__members__}'
@@ -24,10 +24,10 @@ class Habbit:
 
         # Default values
         self.created = datetime.datetime.now()
-        self.completed_times: list[datetime.datetime] = [] # List of datetime objects, indicating the completion history of a habbit
+        self.completed_times: list[datetime.datetime] = [] # List of datetime objects, indicating the completion history of a habit
 
     def mark_complete(self):
-        """ Marks the habbit as complete for today """
+        """ Marks the habit as complete for today """
         self.completed_times.append(datetime.datetime.now())
 
     def mark_incomplete(self):
@@ -35,14 +35,14 @@ class Habbit:
         self.completed_times.pop()
 
     def completed_today(self):
-        """ Returns True if the habbit has been completed today, False otherwise. """
+        """ Returns True if the habit has been completed today, False otherwise. """
         if not self.completed_times:
             return False
         else:
             return self.completed_times[-1].date() == datetime.datetime.now().date()
         
     def completed_on(self, date: datetime.date):
-        """ Returns True if the habbit has been completed on the given date based on frequency, False otherwise. """
+        """ Returns True if the habit has been completed on the given date based on frequency, False otherwise. """
         assert type(date) == datetime.date, f'{date} is not a datetime.date object'
 
         for completion in self.completed_times:
@@ -55,7 +55,7 @@ class Habbit:
         return False
 
     def streak_length(self):
-        """ Returns the number of days in a row the habbit has been completed. """
+        """ Returns the number of days in a row the habit has been completed. """
         if not self.completed_times:
             return 0
         else:
@@ -74,7 +74,7 @@ class Habbit:
             return streak
 
     def streak_longest(self):
-        """ Returns length of the historically longest streak for the habbit """
+        """ Returns length of the historically longest streak for the habit """
         if not self.completed_times:
             return 0
         else:
@@ -95,34 +95,34 @@ class Habbit:
             return streak_longest
 
 
-class HabbitManager:
+class HabitManager:
     def __init__(self):
-        self.habbits: list[Habbit] = []
+        self.habits: list[Habit] = []
 
     def save(self):
-        pickle.dump(self, open(HERE/'data'/'habbit_manager.pkl', 'wb'))
+        pickle.dump(self, open(HERE/'data'/'habit_manager.pkl', 'wb'))
 
     def load(self):
-        if (HERE/'habbit_manager.pkl').exists():
-            return pickle.load(open(HERE/'data'/'habbit_manager.pkl', 'rb'))
+        if (HERE/'habit_manager.pkl').exists():
+            return pickle.load(open(HERE/'data'/'habit_manager.pkl', 'rb'))
         else:
             return self
 
-    def add_habbit(self, habbit: Habbit):
-        self.habbits.append(habbit)
+    def add_habit(self, habit: Habit):
+        self.habits.append(habit)
     
-    def delete_habbit(self, habbit: Habbit):
-        self.habbits.remove(habbit)
+    def delete_habit(self, habit: Habit):
+        self.habits.remove(habit)
 
-    def get_habbits(self):
-        return self.habbits
+    def get_habits(self):
+        return self.habits
 
-    def get_habbits_by_frequency(self, frequency: Frequency):
+    def get_habits_by_frequency(self, frequency: Frequency):
         assert frequency in Frequency, f'{frequency} is not a valid frequency: {Frequency.__members__}'
-        return [habbit for habbit in self.habbits if habbit.frequency == frequency]
+        return [habit for habit in self.habits if habit.frequency == frequency]
     
-    def get_habbit_streaks_longest(self):
-        """ Returns a list of tuples containing the habbit name and its streak length, sorted by longest streak first. """
-        streaks = [(habbit.name, habbit.streak_longest()) for habbit in self.habbits]
+    def get_habit_streaks_longest(self):
+        """ Returns a list of tuples containing the habit name and its streak length, sorted by longest streak first. """
+        streaks = [(habit.name, habit.streak_longest()) for habit in self.habits]
         streaks_sorted = sorted(streaks, key=lambda x: x[1], reverse=True)
         return streaks_sorted

@@ -1,7 +1,7 @@
 import click
-import habbit
+import habit
 
-habbit_manager = habbit.HabbitManager().load()
+habit_manager = habit.HabitManager().load()
 
 @click.group()
 def cli():
@@ -10,7 +10,7 @@ def cli():
 @cli.command()
 def hello():
     click.echo('Hello World!')
-    # habbit_manager.save()
+    # habit_manager.save()
 
 if __name__ == '__main__':
     cli()
