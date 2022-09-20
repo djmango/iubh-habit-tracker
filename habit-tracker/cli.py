@@ -27,6 +27,14 @@ def habits(frequency: str):
     for habit in habits:
         click.echo(f'  {habit.name}')
 
+@cli.command()
+def streaks():
+    """ Lists all habits with their streaks """
+    click.echo(f'{len(habit_manager.get_habits())} Total Habits:')
+
+    for habit in habit_manager.get_habits():
+        click.echo(f'  {habit.name}: {habit.streak_length()}')
+
 # Individual habit commands
 
 # First we need to get a habit object to operate on
@@ -89,6 +97,7 @@ def complete(ctx):
     """ Mark habit as completed for today """
     habit: Habit = ctx.obj['habit']
     habit.mark_complete()
+    habit_manager.save()
     click.secho(f'Habit "{habit.name}" marked as completed.', fg='green')
 
 @habit.command()
@@ -97,6 +106,7 @@ def incomplete(ctx):
     """ Mark a habit as incomplete """
     habit: Habit = ctx.obj['habit']
     habit.mark_incomplete()
+    habit_manager.save()
     click.secho(f'Habit "{habit.name}" marked as incompleted.', fg='red')
 
 @habit.command()
