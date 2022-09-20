@@ -5,11 +5,8 @@ habit_manager = HabitManager().load()
 
 @click.group()
 def cli():
+    """ Habit Tracker CLI """
     pass
-
-@cli.command()
-def hello():
-    click.echo('Hello World!')
 
 # Habit manager commands
 @cli.command()
